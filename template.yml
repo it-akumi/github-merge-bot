@@ -1,0 +1,25 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Transform: AWS::Serverless-2016-10-31
+
+Description: "Try to merge pull request automatically and notify result to slack when you're assigned to reviewer"
+
+Resources:
+  GitHubMergeBot:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: github-merge-bot
+      Runtime: go1.x
+      Timeout: 3
+      CodeUri: ./github-merge-bot
+      Handler: GitHubMergeHandler
+      Role: arn:aws:iam::your-account-id:role/your-role-name
+      Environment:
+        Variables:
+          SLACK_INCOMING_WEBHOOK_URL: https://hooks.slack.com/services/your-incoming-webhook-url
+      Events:
+        GitHubMergeBotTrigger:
+          Type: Api
+          Properties:
+            Path: /github-merge-bot
+            Method: post

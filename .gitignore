@@ -4,6 +4,7 @@
 *.dll
 *.so
 *.dylib
+github-merge-bot/github-merge-bot
 
 # Test binary, build with `go test -c`
 *.test

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"./slack"
 	"context"
 	"encoding/json"
 	"errors"
@@ -39,11 +40,11 @@ func HandleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 	number := prEvent.GetNumber()
 	commitUrl, statusCode, err := mergePullRequest(owner, repo, number)
 	if err != nil {
-		// Notify failed result to slack
+		slack.Notify(fmt.Sprintf("Your PullRequest:%s is failed", commitUrl))
 		return events.APIGatewayProxyResponse{statusCode: statusCode}, err
 	}
 
-	// Notify successful result to slack
+	slack.Notify(fmt.Sprintf("Your PullRequest:%s is merged successfully", commitUrl))
 	return events.APIGatewayProxyResponse{StatusCode: 200}, nil
 }
 

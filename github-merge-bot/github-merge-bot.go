@@ -13,20 +13,20 @@ import (
 	"os"
 )
 
-func mergePullRequest(owner, repo string, number int) (*string, int, error) {
+func mergePullRequest(owner, repo string, number int) (string, int, error) {
 	ctx := context.Background()
 	src := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: os.Getenv("GITHUB_ACCESS_TOKEN")},
 	)
 	client := github.NewClient(oauth2.NewClient(ctx, src))
 
-	commit, resp, err := client.Repositories.Merge(
-		context.Background(), owner, repo, number, nil, nil,
+	result, resp, err := client.PullRequests.Merge(
+		context.Background(), owner, repo, number, "", nil,
 	)
 	if err != nil {
-		return commit.URL, resp.StatusCode, err
+		return *result.Message, resp.StatusCode, err
 	}
-	return commit.URL, resp.StatusCode, nil
+	return *result.Message, resp.StatusCode, nil
 }
 
 func HandleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -35,16 +35,15 @@ func HandleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 		return events.APIGatewayProxyResponse{}, errors.New("Failed to unmarshal JSON")
 	}
 
-	owner := prEvent.GetRepo().Owner.Login
-	repo := prEvent.GetRepo().Name
+	owner := *prEvent.GetRepo().Owner.Login
+	repo := *prEvent.GetRepo().Name
 	number := prEvent.GetNumber()
-	commitUrl, statusCode, err := mergePullRequest(owner, repo, number)
-	if err != nil {
-		slack.Notify(fmt.Sprintf("Your PullRequest:%s is failed", commitUrl))
-		return events.APIGatewayProxyResponse{statusCode: statusCode}, err
-	}
+	resultMessage, statusCode, err := mergePullRequest(owner, repo, number)
+	slack.Notify(fmt.Sprint(resultMessage))
 
-	slack.Notify(fmt.Sprintf("Your PullRequest:%s is merged successfully", commitUrl))
+	if err != nil {
+		return events.APIGatewayProxyResponse{StatusCode: statusCode}, err
+	}
 	return events.APIGatewayProxyResponse{StatusCode: 200}, nil
 }
 

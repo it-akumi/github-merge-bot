@@ -16,6 +16,7 @@ Resources:
       Role: arn:aws:iam::your-account-id:role/your-role-name
       Environment:
         Variables:
+          GITHUB_ACCESS_TOKEN: your_github_access_token
           SLACK_INCOMING_WEBHOOK_URL: https://hooks.slack.com/services/your-incoming-webhook-url
       Events:
         GitHubMergeBotTrigger:

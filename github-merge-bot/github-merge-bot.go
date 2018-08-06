@@ -24,7 +24,13 @@ func mergePullRequest(owner, repo string, number int) (string, int, error) {
 		context.Background(), owner, repo, number, "", nil,
 	)
 	if err != nil {
-		return *result.Message, resp.StatusCode, err
+		var resultMessage string
+		if resp.StatusCode == 405 {
+			resultMessage = "Pull Request is not mergeable"
+		} else if resp.StatusCode == 409 {
+			resultMessage = "Head branch was modified. Review and try the merge again."
+		}
+		return resultMessage, resp.StatusCode, err
 	}
 	return *result.Message, resp.StatusCode, nil
 }

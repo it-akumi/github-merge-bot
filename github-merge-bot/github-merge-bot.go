@@ -35,6 +35,10 @@ func HandleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 		return events.APIGatewayProxyResponse{}, errors.New("Failed to unmarshal JSON")
 	}
 
+	if prEvent.GetAction() != "review_requested" {
+		return events.APIGatewayProxyResponse{StatusCode: 400}, errors.New("action must be review_requested")
+	}
+
 	owner := *prEvent.GetRepo().Owner.Login
 	repo := *prEvent.GetRepo().Name
 	number := prEvent.GetNumber()

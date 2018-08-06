@@ -1,6 +1,6 @@
 github-merge-bot
 ====
-Try to merge pull request automatically and notify result to slack when you're assigned to reviewer
+Try to merge pull request automatically and notify its result to slack when a review is requested
 
 ## Author
 [Takumi Ishii](https://github.com/it-akumi)

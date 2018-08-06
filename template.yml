@@ -2,7 +2,7 @@ AWSTemplateFormatVersion: '2010-09-09'
 
 Transform: AWS::Serverless-2016-10-31
 
-Description: "Try to merge pull request automatically and notify result to slack when you're assigned to reviewer"
+Description: "Try to merge pull request automatically and notify its result to slack when a review is requested"
 
 Resources:
   GitHubMergeBot:

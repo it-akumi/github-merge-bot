@@ -22,5 +22,5 @@ Resources:
         GitHubMergeBotTrigger:
           Type: Api
           Properties:
-            Path: /github-merge-bot
+            Path: /
             Method: post

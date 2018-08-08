@@ -2,6 +2,13 @@ github-merge-bot
 ====
 Try to merge pull request automatically and notify its result to slack when a review is requested
 
+## Usage
+After a deployment, add Webhooks to your repositories and set the Payload URL to endpoint of your API Gateway.
+
+Now this bot is ready.
+When you add reviewers to your pull request, it will be automatically merged.
+Then the result will be notified to your slack channel.
+
 ## How to deploy
 You can deploy github-merge-bot as follows.
 

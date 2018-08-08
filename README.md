@@ -2,6 +2,10 @@ github-merge-bot
 ====
 Try to merge pull request automatically and notify its result to slack when a review is requested
 
+## Requirements
+* Go
+* SAM CLI or AWS CLI
+
 ## Usage
 After a deployment, add Webhooks to your repositories and set the Payload URL to endpoint of your API Gateway.
 
@@ -10,7 +14,6 @@ When you add reviewers to your pull request, it will be automatically merged.
 Then the result will be notified to your slack channel.
 
 ## How to deploy
-You can deploy github-merge-bot as follows.
 
 ### Set these properties in template.yml
 
@@ -23,9 +26,13 @@ You can deploy github-merge-bot as follows.
   * SLACK\_INCOMING\_WEBHOOK\_URL
     * A notification is posted to this URL.
 
-### Build
+### Install dependencies and Build
 
 ```
+$ go get github.com/aws/aws-lambda-go/lambda \
+         github.com/aws/aws-lambda-go/events \
+         github.com/google/go-github/github \
+         golang.org/x/oauth2
 $ go build -o github-merge-bot/github-merge-bot github-merge-bot/github-merge-bot.go
 ```
 
@@ -40,6 +47,8 @@ $ sam deploy \
      --template-file your-output-template.yml \
      --stack-name your-stack-name
 ```
+
+You can use `aws cloudformation` instead of `sam`.
 
 See [AWS document](https://docs.aws.amazon.com/lambda/latest/dg/serverless-deploy-wt.html#serverless-deploy) for more details.
 

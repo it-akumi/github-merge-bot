@@ -12,7 +12,7 @@ import (
 	"os"
 )
 
-func mergePullRequest(owner, repo string, number int) (string, int, error) {
+func mergePullRequest(pullRequestEvent *github.PullRequestEvent) (string, int, error) {
 	ctx := context.Background()
 	src := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: os.Getenv("GITHUB_ACCESS_TOKEN")},
@@ -20,7 +20,12 @@ func mergePullRequest(owner, repo string, number int) (string, int, error) {
 	client := github.NewClient(oauth2.NewClient(ctx, src))
 
 	result, resp, err := client.PullRequests.Merge(
-		context.Background(), owner, repo, number, "", nil,
+		context.Background(),
+		*pullRequestEvent.GetRepo().Owner.Login,
+		*pullRequestEvent.GetRepo().Name,
+		pullRequestEvent.GetNumber(),
+		"",
+		nil,
 	)
 	if err != nil {
 		var resultMessage string
@@ -35,25 +40,22 @@ func mergePullRequest(owner, repo string, number int) (string, int, error) {
 }
 
 func HandleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	prEvent := new(github.PullRequestEvent)
-	if err := json.Unmarshal([]byte(request.Body), &prEvent); err != nil {
+	pullRequestEvent := new(github.PullRequestEvent)
+	if err := json.Unmarshal([]byte(request.Body), &pullRequestEvent); err != nil {
 		return events.APIGatewayProxyResponse{
 			StatusCode: 400,
 			Body:       "Failed to unmarshal JSON\nRequest body may be invalid",
 		}, nil
 	}
 
-	if prEvent.GetAction() != "review_requested" {
+	if pullRequestEvent.GetAction() != "review_requested" {
 		return events.APIGatewayProxyResponse{
 			StatusCode: 400,
 			Body:       "Request parameter 'action' must be 'review_requested'",
 		}, nil
 	}
 
-	owner := *prEvent.GetRepo().Owner.Login
-	repo := *prEvent.GetRepo().Name
-	number := prEvent.GetNumber()
-	resultMessage, statusCode, err := mergePullRequest(owner, repo, number)
+	resultMessage, statusCode, err := mergePullRequest(pullRequestEvent)
 	slack.Notify(fmt.Sprint(resultMessage))
 
 	if err != nil {

@@ -36,7 +36,7 @@ func mergePullRequest(pullRequestEvent *github.PullRequestEvent) (string, int, e
 		}
 		return resultMessage, resp.StatusCode, err
 	}
-	return *result.Message, resp.StatusCode, nil
+	return result.GetMessage(), resp.StatusCode, nil
 }
 
 func HandleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {

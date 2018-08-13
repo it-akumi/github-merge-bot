@@ -30,12 +30,14 @@ func mergePullRequest(pullRequestEvent *github.PullRequestEvent) (string, int, e
 	if err != nil {
 		var resultMessage string
 		if resp.StatusCode == 405 {
-			resultMessage = "Pull Request is not mergeable"
+			resultMessage = "Pull Request is not mergeable."
 		} else if resp.StatusCode == 409 {
 			resultMessage = "Head branch was modified. Review and try the merge again."
 		}
-		return resultMessage, resp.StatusCode, err
+		pullRequestURL := pullRequestEvent.GetPullRequest().GetURL()
+		return resultMessage + pullRequestURL, resp.StatusCode, err
 	}
+
 	return result.GetMessage(), resp.StatusCode, nil
 }
 

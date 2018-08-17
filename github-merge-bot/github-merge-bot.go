@@ -37,7 +37,7 @@ func mergePullRequest(pullRequestEvent *github.PullRequestEvent) (string, int, e
 	}
 
 	// Delete merged branch
-	ref := pullRequestEvent.GetPullRequest().GetHead().GetRef()
+	ref := "heads/" + pullRequestEvent.GetPullRequest().GetHead().GetRef()
 	resp, err = client.Git.DeleteRef(context.Background(), owner, repo, ref)
 	if err != nil {
 		return "Failed to delete merged branch", resp.StatusCode, err

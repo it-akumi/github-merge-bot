@@ -30,12 +30,23 @@ func mergePullRequest(pullRequestEvent *github.PullRequestEvent) (string, int, e
 	if err != nil {
 		var resultMessage string
 		if resp.StatusCode == 405 {
-			resultMessage = "Pull Request is not mergeable.\n"
+			resultMessage = "Pull Request is not mergeable\n"
 		} else if resp.StatusCode == 409 {
 			resultMessage = "Head branch was modified. Review and try the merge again.\n"
 		}
 		pullRequestHTMLURL := pullRequestEvent.GetPullRequest().GetHTMLURL()
 		return resultMessage + pullRequestHTMLURL, resp.StatusCode, err
+	}
+
+	// Delete merged branch
+	resp, err = client.Git.DeleteRef(
+		context.Background(),
+		*pullRequestEvent.GetRepo().Owner.Login,
+		*pullRequestEvent.GetRepo().Name,
+		pullRequestEvent.GetPullRequest().GetHead().GetRef(),
+	)
+	if err != nil {
+		return "Failed to delete merged branch", resp.StatusCode, err
 	}
 
 	return result.GetMessage(), resp.StatusCode, nil

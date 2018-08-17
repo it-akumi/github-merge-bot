@@ -19,13 +19,11 @@ func mergePullRequest(pullRequestEvent *github.PullRequestEvent) (string, int, e
 	)
 	client := github.NewClient(oauth2.NewClient(ctx, src))
 
+	owner := pullRequestEvent.GetRepo().GetOwner().GetLogin()
+	repo := pullRequestEvent.GetRepo().GetName()
+	number := pullRequestEvent.GetNumber()
 	result, resp, err := client.PullRequests.Merge(
-		context.Background(),
-		*pullRequestEvent.GetRepo().Owner.Login,
-		*pullRequestEvent.GetRepo().Name,
-		pullRequestEvent.GetNumber(),
-		"",
-		nil,
+		context.Background(), owner, repo, number, "", nil,
 	)
 	if err != nil {
 		var resultMessage string
@@ -39,12 +37,8 @@ func mergePullRequest(pullRequestEvent *github.PullRequestEvent) (string, int, e
 	}
 
 	// Delete merged branch
-	resp, err = client.Git.DeleteRef(
-		context.Background(),
-		*pullRequestEvent.GetRepo().Owner.Login,
-		*pullRequestEvent.GetRepo().Name,
-		pullRequestEvent.GetPullRequest().GetHead().GetRef(),
-	)
+	ref := pullRequestEvent.GetPullRequest().GetHead().GetRef()
+	resp, err = client.Git.DeleteRef(context.Background(), owner, repo, ref)
 	if err != nil {
 		return "Failed to delete merged branch", resp.StatusCode, err
 	}

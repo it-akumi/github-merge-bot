@@ -11,7 +11,7 @@ Resources:
       FunctionName: github-merge-bot
       Runtime: go1.x
       Timeout: 10
-      CodeUri: github-merge-bot/
+      CodeUri: src/
       Handler: github-merge-bot
       Role: arn:aws:iam::your-account-id:role/your-role-name
       Environment:

@@ -11,11 +11,10 @@ type Message struct {
 	Text string `json:"text"`
 }
 
-func Notify(text string) {
+func Notify(text string) error {
 	body, err := json.Marshal(Message{Text: text})
 	if err != nil {
-		println("Failed to marshal message")
-		os.Exit(1)
+		return err
 	}
 	req, err := http.NewRequest(
 		"POST",
@@ -23,8 +22,7 @@ func Notify(text string) {
 		bytes.NewBuffer(body),
 	)
 	if err != nil {
-		println("Failed to create new request")
-		os.Exit(1)
+		return err
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -32,9 +30,8 @@ func Notify(text string) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		println("Failed to notify to slack")
-		os.Exit(1)
+		return err
 	}
 	defer resp.Body.Close()
-	return
+	return nil
 }

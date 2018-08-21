@@ -51,7 +51,7 @@ func HandleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 		return events.APIGatewayProxyResponse{
 			StatusCode: 400,
 			Body:       "Failed to unmarshal JSON\nRequest body may be invalid",
-		}, nil
+		}, err
 	}
 
 	if pullRequestEvent.GetAction() != "review_requested" {
@@ -62,10 +62,21 @@ func HandleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 	}
 
 	resultMessage, statusCode, err := mergePullRequest(pullRequestEvent)
-	slack.Notify(resultMessage)
 
+	// err indicates whether notification succeed or not in this scope
+	if err := slack.Notify(resultMessage); err != nil {
+		return events.APIGatewayProxyResponse{
+			StatusCode: 500,
+			Body:       "Notification failed",
+		}, err
+	}
+
+	// err indicates whether mergePullRequest succeed or not
 	if err != nil {
-		return events.APIGatewayProxyResponse{StatusCode: statusCode, Body: resultMessage}, nil
+		return events.APIGatewayProxyResponse{
+			StatusCode: statusCode,
+			Body:       resultMessage,
+		}, err
 	}
 	return events.APIGatewayProxyResponse{StatusCode: 200, Body: resultMessage}, nil
 }

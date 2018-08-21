@@ -4,7 +4,6 @@ import (
 	"./slack"
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/google/go-github/github"
@@ -63,7 +62,7 @@ func HandleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 	}
 
 	resultMessage, statusCode, err := mergePullRequest(pullRequestEvent)
-	slack.Notify(fmt.Sprint(resultMessage))
+	slack.Notify(resultMessage)
 
 	if err != nil {
 		return events.APIGatewayProxyResponse{StatusCode: statusCode, Body: resultMessage}, nil

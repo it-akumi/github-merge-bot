@@ -56,8 +56,8 @@ func HandleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 
 	if pullRequestEvent.GetAction() != "review_requested" {
 		return events.APIGatewayProxyResponse{
-			StatusCode: 400,
-			Body:       "Request parameter 'action' must be 'review_requested'",
+			StatusCode: 204,
+			Body:       "",
 		}, nil
 	}
 

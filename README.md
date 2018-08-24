@@ -1,12 +1,15 @@
 github-merge-bot
 ====
+
 Try to merge pull request automatically and notify its result to slack when a review is requested
 
 ## Requirements
+
 * Go
 * SAM CLI or AWS CLI
 
 ## Usage
+
 After a deployment, add Webhooks to your repositories and set the Payload URL to endpoint of your API Gateway.
 
 Now this bot is ready.
@@ -33,7 +36,7 @@ $ go get github.com/aws/aws-lambda-go/lambda \
          github.com/aws/aws-lambda-go/events \
          github.com/google/go-github/github \
          golang.org/x/oauth2
-$ go build -o github-merge-bot/github-merge-bot github-merge-bot/github-merge-bot.go
+$ go build -o src/github-merge-bot src/github-merge-bot.go
 ```
 
 ### Packaging and Deployment

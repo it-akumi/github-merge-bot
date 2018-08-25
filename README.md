@@ -22,6 +22,7 @@ Then the result will be notified to your slack channel.
 
 * Role
   * An arn of role who execute the Lambda function.
+  * If you comment out this property, a default role is created for this function.
 
 * Environment Variables
   * GITHUB\_ACCESS\_TOKEN

@@ -18,17 +18,12 @@ Then the result will be notified to your slack channel.
 
 ## How to deploy
 
-### Set these properties in template.yml
+### Set environment variables in template.yml
 
-* Role
-  * An arn of role who execute the Lambda function.
-  * If you comment out this property, a default role is created for this function.
-
-* Environment Variables
-  * GITHUB\_ACCESS\_TOKEN
-    * A pull request is merged by a user whose GitHub Access Token is set.
-  * SLACK\_INCOMING\_WEBHOOK\_URL
-    * A notification is posted to this URL.
+* GITHUB\_ACCESS\_TOKEN
+  * A pull request is merged by a user whose GitHub Access Token is set.
+* SLACK\_INCOMING\_WEBHOOK\_URL
+  * A notification is posted to this URL.
 
 ### Install dependencies and Build
 
@@ -50,6 +45,7 @@ $ sam package \
 $ sam deploy \
      --template-file your-output-template.yml \
      --stack-name your-stack-name
+     --capabilities CAPABILITY_IAM
 ```
 
 You can use `aws cloudformation` instead of `sam`.
